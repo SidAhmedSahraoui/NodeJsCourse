@@ -18,5 +18,14 @@ module.exports = {
     });
     const createdUser = await user.save();
     return { ...createdUser._doc, _id: createdUser._id.toString() };
-  }
+  },
+  hello() {
+    return {
+      title: "hi",
+      adress: {
+        rue: "add",
+        nb: 9
+      }
+    }
+  },
 };
