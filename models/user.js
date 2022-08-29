@@ -10,18 +10,18 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
-  name: {
-    type: String,
-    required: true
-  },
   status: {
     type: String,
     default: 'I am new!'
   },
-  posts: [
+  phone: {
+    type: Number,
+    required: true
+  },
+  messages: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Post'
+      ref: 'Message'
     }
   ]
 });

@@ -22,7 +22,6 @@ app.use(
     'mongodb://localhost:27017/soc'
   )
   .then(result => {
-    console.log("first")
     app.listen(8000);
   })
   .catch(err => console.log(err));

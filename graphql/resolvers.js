@@ -1,31 +1,20 @@
 const bcrypt = require('bcryptjs');
-
+const { check, validationResult } = require('express-validator')
 const User = require('../models/user');
 
 module.exports = {
-  createUser: async function({ userInput }, req) {
-    //   const email = args.userInput.email;
-    const existingUser = await User.findOne({ email: userInput.email });
-    if (existingUser) {
-      const error = new Error('User exists already!');
-      throw error;
-    }
+  createUser: async function({ userInput }, res) {
+
     const hashedPw = await bcrypt.hash(userInput.password, 12);
     const user = new User({
       email: userInput.email,
-      name: userInput.name,
+      phone: userInput.phone,
       password: hashedPw
     });
     const createdUser = await user.save();
-    return { ...createdUser._doc, _id: createdUser._id.toString() };
+    return createdUser;
   },
-  hello() {
-    return {
-      title: "hi",
-      adress: {
-        rue: "add",
-        nb: 9
-      }
-    }
+  getStatus(req,res) {
+
   },
 };
