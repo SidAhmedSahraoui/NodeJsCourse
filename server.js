@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const { graphqlHTTP } = require('express-graphql');
 
 const graphqlSchema = require('./graphql/schema');
