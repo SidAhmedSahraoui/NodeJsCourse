@@ -1,6 +1,6 @@
 const User = require("../models/user");
 const Message = require("../models/message");
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs");
 module.exports = {
   createUser: async function ({ userInput }, req) {
     const { email, username, password } = userInput;
@@ -14,7 +14,7 @@ module.exports = {
     const salt = await bcrypt.genSalt(10)
     user.password = await bcrypt.hash(password, salt)
     await user.save()
-    return { email, username }
+    return {email, username}
   },
   getUser() {
     return {
