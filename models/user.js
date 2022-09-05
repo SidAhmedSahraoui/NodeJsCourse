@@ -10,13 +10,9 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
-  status: {
+  username: {
     type: String,
-    default: 'I am new!'
-  },
-  phone: {
-    type: Number,
-    required: true
+    required: true,
   },
   messages: [
     {
