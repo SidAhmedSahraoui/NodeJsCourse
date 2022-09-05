@@ -23,7 +23,10 @@ module.exports = {
       $or: [{ email: email }, { username: username }],
     });
     if (user) {
-      return res.status(400).json([{msg: "Username Or Email Already exists"}])
+      const error = new Error("User already exists.")
+      error.data = [{msg: "Email or username already exists"}] 
+      error.code = 422
+      throw error
     }
     user = new User({email, username, password})
     const salt = await bcrypt.genSalt(10)
