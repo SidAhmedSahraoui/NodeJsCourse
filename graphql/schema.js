@@ -14,8 +14,14 @@ module.exports = buildSchema(`
         messages: [Message!]!
     }
 
+    type Auth {
+        token: String!
+        email: String!
+    }
+
     type RootQuery {
         getUser: User!
+        login(email: String! , password: String!): Auth!
     }
 
     input UserInputData {
