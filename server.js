@@ -1,11 +1,17 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const { graphqlHTTP } = require("express-graphql");
 
+const connectDB = require("./config/db");
 const graphqlSchema = require("./graphql/schema");
 const graphqlResolver = require("./graphql/resolvers");
-
+const auth = require("./middleware/auth");
 const app = express();
+
+// Connect DB
+connectDB();
+
+// Init middleware
+app.use(auth);
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -19,6 +25,8 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+// GraphQL
 app.use(
   "/graphql",
   graphqlHTTP({
@@ -37,9 +45,4 @@ app.use(
   })
 );
 
-mongoose
-  .connect("mongodb://localhost:27017/soc")
-  .then((result) => {
-    app.listen(8000);
-  })
-  .catch((err) => console.log(err));
+app.listen(8000, () => console.log("Server started, port: 5000"));

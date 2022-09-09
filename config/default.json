@@ -1,0 +1,4 @@
+{
+    "mongodbURI": "mongodb://localhost:27017/soc",
+    "jwtSecret": "123456"
+}

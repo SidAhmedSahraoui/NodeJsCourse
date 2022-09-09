@@ -3,6 +3,10 @@ const Schema = mongoose.Schema;
 
 const messageSchema = new Schema(
   {
+    title: {
+      type: String,
+      required: true
+    },
     content: {
       type: String,
       required: true

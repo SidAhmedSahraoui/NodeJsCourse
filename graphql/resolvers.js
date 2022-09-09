@@ -3,6 +3,7 @@ const Message = require("../models/message");
 const bcrypt = require("bcryptjs");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
+const { jwtSecret } = require("../config/default.json");
 
 module.exports = {
   createUser: async function ({ userInput }, req) {
@@ -20,7 +21,7 @@ module.exports = {
     if (errors.length > 0) {
       const error = new Error("Invalid input.");
       error.data = errors;
-      error.code = 422;
+      error.code = 404;
       throw error;
     }
     let user = await User.findOne({
@@ -38,12 +39,6 @@ module.exports = {
     await user.save();
     return { email, username };
   },
-  getUser() {
-    return {
-      email: "ok",
-      username: "123",
-    };
-  },
   login: async function ({ email, password }) {
     let user = await User.findOne({ email: email });
     if (!user) {
@@ -57,7 +52,53 @@ module.exports = {
       error.code = 401;
       throw error;
     }
-    const token = jwt.sign({ userId: user._id, email: user.email }, "123456", {expiresIn: "1h"});
-    return { token: token, email: email }
+    const token = jwt.sign({ userId: user._id, email: user.email }, jwtSecret, {
+      expiresIn: "3600h",
+    });
+    return { token: token, email: email };
   },
+  createMessage: async function ({ msgInput }, req) {
+    if(!req.isAuth) {
+      const error = new Error('No token, auth denied')
+      error.code = 401
+      throw error
+    }
+    const { title, content } = msgInput;
+    const errors = [];
+    if (validator.isEmpty(title) || !validator.isLength(title, { min: 5 })) {
+      errors.push({ msg: "Title too short." });
+    }
+    if (
+      validator.isEmpty(content) ||
+      !validator.isLength(content, { min: 5 })
+    ) {
+      errors.push({ msg: "Content too short." });
+    }
+    if (errors.length > 0) {
+      const error = new Error("Invalid input.");
+      error.code = 404;
+      error.data = errors;
+      throw error;
+    }
+    const user = await User.findById(req.userId)
+    if(!user) {
+      const error = new Error("Invalid user.");
+      error.code = 401;
+      throw error;
+    }
+    let message = new Message({
+      title: title,
+      content: content,
+      creator: user
+    });
+    await message.save();
+    user.messages.push(message)
+    await user.save()
+    return message;
+  },
+  getMessages: async function(args, req) {
+    const messages = Message.find().sort()
+    const total = Message.find().count()
+    return {messages: messages, total: total}
+  }
 };
