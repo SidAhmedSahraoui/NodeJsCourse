@@ -1,13 +1,6 @@
 const { buildSchema } = require('graphql');
 
 module.exports = buildSchema(`
-    type Message {
-        title: String
-        content: String!
-        isFav: Boolean!
-        createdAt: String!
-    }
-
     type User {
         email: String!
         username: String!
@@ -15,18 +8,21 @@ module.exports = buildSchema(`
         messages: [Message!]!
     }
 
+    type Message {
+        title: String
+        content: String!
+        creator: User!
+        isFav: Boolean!
+        createdAt: String!
+    }
+
     type Auth {
         token: String!
         email: String!
     }
-    type Msgs {
+    type Messages {
         messages: [Message!]!
         total: Int!
-    }
-
-    type RootQuery {
-        login(email: String! , password: String!): Auth!
-        getMessages: Msgs!
     }
 
     input UserInputData {
@@ -40,6 +36,11 @@ module.exports = buildSchema(`
         content: String!
     }
 
+    type RootQuery {
+        login(email: String! , password: String!): Auth!
+        getMessages: Messages!
+        getUserMessages: Messages!
+    }
 
     type RootMutation {
         createUser(userInput: UserInputData!): User!

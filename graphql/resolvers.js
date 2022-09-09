@@ -58,10 +58,10 @@ module.exports = {
     return { token: token, email: email };
   },
   createMessage: async function ({ msgInput }, req) {
-    if(!req.isAuth) {
-      const error = new Error('No token, auth denied')
-      error.code = 401
-      throw error
+    if (!req.isAuth) {
+      const error = new Error("No token, auth denied");
+      error.code = 401;
+      throw error;
     }
     const { title, content } = msgInput;
     const errors = [];
@@ -80,8 +80,8 @@ module.exports = {
       error.data = errors;
       throw error;
     }
-    const user = await User.findById(req.userId)
-    if(!user) {
+    const user = await User.findById(req.userId);
+    if (!user) {
       const error = new Error("Invalid user.");
       error.code = 401;
       throw error;
@@ -89,16 +89,31 @@ module.exports = {
     let message = new Message({
       title: title,
       content: content,
-      creator: user
+      creator: user,
     });
     await message.save();
-    user.messages.push(message)
-    await user.save()
+    user.messages.push(message);
+    await user.save();
     return message;
   },
-  getMessages: async function(args, req) {
-    const messages = Message.find().sort()
-    const total = Message.find().count()
-    return {messages: messages, total: total}
-  }
+  getMessages: async function (args, req) {
+    const messages = Message.find().sort({ createdAt: -1 });
+    const total = Message.find().count();
+    return { messages: messages, total: total };
+  },
+  getUserMessages: async function (args, req) {
+    if (!req.isAuth) {
+      const error = new Error("No token, auth denied");
+      error.code = 401;
+      throw error;
+    }
+    const messages = await Message.find({creator:req.userId});
+    if (messages) {
+      const total = messages.length;
+      console.log(messages);
+      return { messages: messages, total: total };
+    } else {
+      return "No messages yet!";
+    }
+  },
 };
