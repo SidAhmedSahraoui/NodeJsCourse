@@ -94,10 +94,10 @@ module.exports = {
     await message.save();
     user.messages.push(message);
     await user.save();
-    return message;
+    return {...message._doc , createdAt: message.createdAt.toISOString()};
   },
   getMessages: async function (args, req) {
-    const messages = Message.find().sort({ createdAt: -1 });
+    const messages = Message.find().populate("creator").sort({ createdAt: -1 });
     const total = Message.find().count();
     return { messages: messages, total: total };
   },
@@ -107,10 +107,9 @@ module.exports = {
       error.code = 401;
       throw error;
     }
-    const messages = await Message.find({creator:req.userId});
+    const messages = await Message.find({creator:req.userId}).populate("creator");
     if (messages) {
       const total = messages.length;
-      console.log(messages);
       return { messages: messages, total: total };
     } else {
       return "No messages yet!";
